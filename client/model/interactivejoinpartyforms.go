@@ -6,7 +6,7 @@
  */
 package model
 
-type JoinPartyForms struct {
+type InteractiveJoinPartyForms struct {
         // 派对id
     PartyId string `json:"partyId"`
         // 用户ID

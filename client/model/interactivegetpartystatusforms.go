@@ -6,7 +6,7 @@
  */
 package model
 
-type GetPartyStatusForms struct {
+type InteractiveGetPartyStatusForms struct {
         // 派对id
     PartyId string `json:"partyId"`
 }

@@ -6,7 +6,7 @@
  */
 package model
 
-type ModifySeatsForms struct {
+type InteractiveModifySeatsForms struct {
         // 派对id
     PartyId string `json:"partyId"`
         // 操作者

@@ -14,24 +14,24 @@ import (
 	"strings"
 )
 
-type InteractiveApiService service
+type UsercontrollerApiService service
 
 
-// GetParty
+// DeleteGameArchive
 /*
- * 获取派对
- * @param varForms model.InteractiveGetPartyForms
+ * 根据存档id删除存档纪录
+ * @param varForms model.UsercontrollerDeleteGameArchiveForms
  */
-func (s *InteractiveApiService) GetParty(
-    varForms *model.InteractiveGetPartyForms,
-) (model.InteractiveGetPartyResult, *http.Response, error) {
+func (s *UsercontrollerApiService) DeleteGameArchive(
+    varForms *model.UsercontrollerDeleteGameArchiveForms,
+) (model.UsercontollerDeleteGameArchiveResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveGetPartyResult
+        varReturnValue model.UsercontollerDeleteGameArchiveResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/getParty"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/deleteGameArchive"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -54,12 +54,168 @@ func (s *InteractiveApiService) GetParty(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("mixGameId", parameterToString(varForms.MixGameId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	varFormParams.Add("reConnect", parameterToString(varForms.ReConnect, ""))
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	varFormParams.Add("archiveId", parameterToString(varForms.ArchiveId, ""))
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// GetGameTrialSurplusDuration
+/*
+ * 查询剩余试玩游戏时长
+ * @param varForms model.UsercontrollerGetGameTrialSurplusDurationForms
+ */
+func (s *UsercontrollerApiService) GetGameTrialSurplusDuration(
+    varForms *model.UsercontrollerGetGameTrialSurplusDurationForms,
+) (model.UsercontollerGetGameTrialSurplusDurationResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.UsercontollerGetGameTrialSurplusDurationResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/getGameTrialSurplusDuration"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
 	varFormParams.Add("projectId", parameterToString(varForms.ProjectId, ""))
-	if varForms != nil && varForms.Config != nil {
-		varFormParams.Add("config", parameterToString(*varForms.Config, ""))
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// ListLatestGameArchive
+/*
+ * 查询用户正常状态的最新存档纪录，按照存档时间倒序
+ * @param varForms model.UsercontrollerListLatestGameArchiveForms
+ */
+func (s *UsercontrollerApiService) ListLatestGameArchive(
+    varForms *model.UsercontrollerListLatestGameArchiveForms,
+) (model.UsercontollerListLatestGameArchiveResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.UsercontollerListLatestGameArchiveResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/listLatestGameArchive"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	if varForms != nil && varForms.PageSize != nil {
+		varFormParams.Add("pageSize", parameterToString(*varForms.PageSize, ""))
+	}
+	if varForms != nil && varForms.PageNumber != nil {
+		varFormParams.Add("pageNumber", parameterToString(*varForms.PageNumber, ""))
+	}
+	if varForms != nil && varForms.TagStatus != nil {
+		varFormParams.Add("tagStatus", parameterToString(*varForms.TagStatus, ""))
 	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
@@ -97,21 +253,21 @@ func (s *InteractiveApiService) GetParty(
 	return varReturnValue, varHttpResponse, nil
 }
 
-// GetPartyStatus
+// RestoreGameArchive
 /*
- * 查询派对游戏状态
- * @param varForms model.InteractiveGetPartyStatusForms
+ * 将指定的存档ID恢复为最新存档
+ * @param varForms model.UsercontrollerRestoreGameArchiveForms
  */
-func (s *InteractiveApiService) GetPartyStatus(
-    varForms *model.InteractiveGetPartyStatusForms,
-) (model.InteractiveGetPartyStatusResult, *http.Response, error) {
+func (s *UsercontrollerApiService) RestoreGameArchive(
+    varForms *model.UsercontrollerRestoreGameArchiveForms,
+) (model.UsercontollerRestoreGameArchiveResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveGetPartyStatusResult
+        varReturnValue model.UsercontollerRestoreGameArchiveResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/getPartyStatus"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/restoreGameArchive"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -134,7 +290,9 @@ func (s *InteractiveApiService) GetPartyStatus(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	varFormParams.Add("archiveId", parameterToString(varForms.ArchiveId, ""))
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {
@@ -171,21 +329,21 @@ func (s *InteractiveApiService) GetPartyStatus(
 	return varReturnValue, varHttpResponse, nil
 }
 
-// JoinParty
+// UpdateGameArchiveTagStatus
 /*
- * 加入分配席位
- * @param varForms model.InteractiveJoinPartyForms
+ * 更新存档打标状态
+ * @param varForms model.UsercontrollerUpdateGameArchiveTagStatusForms
  */
-func (s *InteractiveApiService) JoinParty(
-    varForms *model.InteractiveJoinPartyForms,
-) (model.InteractiveJoinPartyResult, *http.Response, error) {
+func (s *UsercontrollerApiService) UpdateGameArchiveTagStatus(
+    varForms *model.UsercontrollerUpdateGameArchiveTagStatusForms,
+) (model.UsercontollerUpdateGameArchiveTagStatusResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveJoinPartyResult
+        varReturnValue model.UsercontollerUpdateGameArchiveTagStatusResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/joinParty"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/updateGameArchiveTagStatus"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -208,242 +366,10 @@ func (s *InteractiveApiService) JoinParty(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	varFormParams.Add("seatId", parameterToString(varForms.SeatId, ""))
-	varFormParams.Add("controlId", parameterToString(varForms.ControlId, ""))
-	varFormParams.Add("reConnect", parameterToString(varForms.ReConnect, ""))
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// KickOutUser
-/*
- * 踢出派对
- * @param varForms model.InteractiveKickOutUserForms
- */
-func (s *InteractiveApiService) KickOutUser(
-    varForms *model.InteractiveKickOutUserForms,
-) (model.InteractiveKickOutUserResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveKickOutUserResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/kickOutUser"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	if varForms != nil && varForms.KickOutReason != nil {
-		varFormParams.Add("kickOutReason", parameterToString(*varForms.KickOutReason, ""))
-	}
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// ModifySeats
-/*
- * 修改席位
- * @param varForms model.InteractiveModifySeatsForms
- */
-func (s *InteractiveApiService) ModifySeats(
-    varForms *model.InteractiveModifySeatsForms,
-) (model.InteractiveModifySeatsResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveModifySeatsResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/modifySeats"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("operator", parameterToString(varForms.Operator, ""))
-	varFormParams.Add("modifySeats", parameterToString(varForms.ModifySeats, "multi"))
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// ShutDownParty
-/*
- * 关闭派对
- * @param varForms model.InteractiveShutDownPartyForms
- */
-func (s *InteractiveApiService) ShutDownParty(
-    varForms *model.InteractiveShutDownPartyForms,
-) (model.InteractiveShutDownPartyResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveShutDownPartyResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/shutDownParty"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	if varForms != nil && varForms.ShutDownReason != nil {
-		varFormParams.Add("shutDownReason", parameterToString(*varForms.ShutDownReason, ""))
-	}
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	varFormParams.Add("archiveId", parameterToString(varForms.ArchiveId, ""))
+	varFormParams.Add("tagStatus", parameterToString(varForms.TagStatus, ""))
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {

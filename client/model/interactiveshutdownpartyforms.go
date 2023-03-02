@@ -6,7 +6,7 @@
  */
 package model
 
-type ShutDownPartyForms struct {
+type InteractiveShutDownPartyForms struct {
         // 派对id
     PartyId string `json:"partyId"`
         // 关闭原因

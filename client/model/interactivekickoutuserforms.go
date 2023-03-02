@@ -6,7 +6,7 @@
  */
 package model
 
-type KickOutUserForms struct {
+type InteractiveKickOutUserForms struct {
         // 派对id
     PartyId string `json:"partyId"`
         // 用户Id
