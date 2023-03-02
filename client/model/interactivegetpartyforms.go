@@ -6,7 +6,7 @@
  */
 package model
 
-type GetPartyForms struct {
+type InteractiveGetPartyForms struct {
         // 游戏ID
     MixGameId string `json:"mixGameId"`
         // 用户ID

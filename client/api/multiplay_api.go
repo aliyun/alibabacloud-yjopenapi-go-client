@@ -14,24 +14,24 @@ import (
 	"strings"
 )
 
-type InteractiveApiService service
+type MultiplayApiService service
 
 
-// GetParty
+// Close
 /*
- * 获取派对
- * @param varForms model.InteractiveGetPartyForms
+ * 关闭联机
+ * @param varForms model.MultiplayCloseForms
  */
-func (s *InteractiveApiService) GetParty(
-    varForms *model.InteractiveGetPartyForms,
-) (model.InteractiveGetPartyResult, *http.Response, error) {
+func (s *MultiplayApiService) Close(
+    varForms *model.MultiplayCloseForms,
+) (model.MultiplayCloseResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveGetPartyResult
+        varReturnValue model.MultiplayCloseResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/getParty"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/close"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -54,242 +54,90 @@ func (s *InteractiveApiService) GetParty(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("mixGameId", parameterToString(varForms.MixGameId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	varFormParams.Add("reConnect", parameterToString(varForms.ReConnect, ""))
-	varFormParams.Add("projectId", parameterToString(varForms.ProjectId, ""))
+	varFormParams.Add("mpId", parameterToString(varForms.MpId, ""))
+	if varForms != nil && varForms.Reason != nil {
+		varFormParams.Add("reason", parameterToString(*varForms.Reason, ""))
+	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// Init
+/*
+ * 初始化联机
+ * @param varForms model.MultiplayInitForms
+ */
+func (s *MultiplayApiService) Init(
+    varForms *model.MultiplayInitForms,
+) (model.MultiplayInitResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.MultiplayInitResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/init"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("gameSession", parameterToString(varForms.GameSession, ""))
+	varFormParams.Add("appKey", parameterToString(varForms.AppKey, ""))
 	if varForms != nil && varForms.Config != nil {
 		varFormParams.Add("config", parameterToString(*varForms.Config, ""))
 	}
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// GetPartyStatus
-/*
- * 查询派对游戏状态
- * @param varForms model.InteractiveGetPartyStatusForms
- */
-func (s *InteractiveApiService) GetPartyStatus(
-    varForms *model.InteractiveGetPartyStatusForms,
-) (model.InteractiveGetPartyStatusResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveGetPartyStatusResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/getPartyStatus"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// JoinParty
-/*
- * 加入分配席位
- * @param varForms model.InteractiveJoinPartyForms
- */
-func (s *InteractiveApiService) JoinParty(
-    varForms *model.InteractiveJoinPartyForms,
-) (model.InteractiveJoinPartyResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveJoinPartyResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/joinParty"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	varFormParams.Add("seatId", parameterToString(varForms.SeatId, ""))
-	varFormParams.Add("controlId", parameterToString(varForms.ControlId, ""))
-	varFormParams.Add("reConnect", parameterToString(varForms.ReConnect, ""))
-
-	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
-	if err != nil {
-		return varReturnValue, nil, err
-	}
-
-	varHttpResponse, err := s.client.callAPI(r)
-	if err != nil || varHttpResponse == nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-    defer varHttpResponse.Body.Close()
-	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
-	if err != nil {
-		return varReturnValue, varHttpResponse, err
-	}
-
-	if varHttpResponse.StatusCode < 300 {
-		// If we succeed, return the data, otherwise pass on to decode error.
-		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
-		if err == nil { 
-			return varReturnValue, varHttpResponse, err
-		}
-	}
-
-	if varHttpResponse.StatusCode >= 300 {
-		newErr := GenericError{
-			body: varBody,
-			error: varHttpResponse.Status,
-		}
-		return varReturnValue, varHttpResponse, newErr
-	}
-
-	return varReturnValue, varHttpResponse, nil
-}
-
-// KickOutUser
-/*
- * 踢出派对
- * @param varForms model.InteractiveKickOutUserForms
- */
-func (s *InteractiveApiService) KickOutUser(
-    varForms *model.InteractiveKickOutUserForms,
-) (model.InteractiveKickOutUserResult, *http.Response, error) {
-	var (
-		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveKickOutUserResult
-	)
-
-	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/kickOutUser"
-
-	varHeaderParams := make(map[string]string)
-	varQueryParams := url.Values{}
-	varFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
-
-	// set Content-Type header
-	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
-	if varHttpContentType != "" {
-		varHeaderParams["Content-Type"] = varHttpContentType
-	}
-
-	// to determine the Accept header
-	varHttpHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
-	if varHttpHeaderAccept != "" {
-		varHeaderParams["Accept"] = varHttpHeaderAccept
-	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
-	if varForms != nil && varForms.KickOutReason != nil {
-		varFormParams.Add("kickOutReason", parameterToString(*varForms.KickOutReason, ""))
+	if varForms != nil && varForms.Tokens != nil {
+		varFormParams.Add("tokens", parameterToString(*varForms.Tokens, "multi"))
 	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
@@ -327,21 +175,21 @@ func (s *InteractiveApiService) KickOutUser(
 	return varReturnValue, varHttpResponse, nil
 }
 
-// ModifySeats
+// Join
 /*
- * 修改席位
- * @param varForms model.InteractiveModifySeatsForms
+ * 加入联机
+ * @param varForms model.MultiplayJoinForms
  */
-func (s *InteractiveApiService) ModifySeats(
-    varForms *model.InteractiveModifySeatsForms,
-) (model.InteractiveModifySeatsResult, *http.Response, error) {
+func (s *MultiplayApiService) Join(
+    varForms *model.MultiplayJoinForms,
+) (model.MultiplayJoinResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveModifySeatsResult
+        varReturnValue model.MultiplayJoinResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/modifySeats"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/join"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -364,9 +212,11 @@ func (s *InteractiveApiService) ModifySeats(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	varFormParams.Add("operator", parameterToString(varForms.Operator, ""))
-	varFormParams.Add("modifySeats", parameterToString(varForms.ModifySeats, "multi"))
+	varFormParams.Add("mpId", parameterToString(varForms.MpId, ""))
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
+	if varForms != nil && varForms.ControlId != nil {
+		varFormParams.Add("controlId", parameterToString(*varForms.ControlId, ""))
+	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {
@@ -403,21 +253,21 @@ func (s *InteractiveApiService) ModifySeats(
 	return varReturnValue, varHttpResponse, nil
 }
 
-// ShutDownParty
+// Leave
 /*
- * 关闭派对
- * @param varForms model.InteractiveShutDownPartyForms
+ * 离开联机
+ * @param varForms model.MultiplayLeaveForms
  */
-func (s *InteractiveApiService) ShutDownParty(
-    varForms *model.InteractiveShutDownPartyForms,
-) (model.InteractiveShutDownPartyResult, *http.Response, error) {
+func (s *MultiplayApiService) Leave(
+    varForms *model.MultiplayLeaveForms,
+) (model.MultiplayLeaveResult, *http.Response, error) {
 	var (
 		varHttpMethod = strings.ToUpper("Post")
-        varReturnValue model.InteractiveShutDownPartyResult
+        varReturnValue model.MultiplayLeaveResult
 	)
 
 	// create path and map variables
-	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/interactive/shutDownParty"
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/leave"
 
 	varHeaderParams := make(map[string]string)
 	varQueryParams := url.Values{}
@@ -440,10 +290,163 @@ func (s *InteractiveApiService) ShutDownParty(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("partyId", parameterToString(varForms.PartyId, ""))
-	if varForms != nil && varForms.ShutDownReason != nil {
-		varFormParams.Add("shutDownReason", parameterToString(*varForms.ShutDownReason, ""))
+	varFormParams.Add("mpId", parameterToString(varForms.MpId, ""))
+	varFormParams.Add("kickOut", parameterToString(varForms.KickOut, ""))
+	if varForms != nil && varForms.Reason != nil {
+		varFormParams.Add("reason", parameterToString(*varForms.Reason, ""))
 	}
+	varFormParams.Add("tokenIds", parameterToString(varForms.TokenIds, "multi"))
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// Modify
+/*
+ * 修改联机
+ * @param varForms model.MultiplayModifyForms
+ */
+func (s *MultiplayApiService) Modify(
+    varForms *model.MultiplayModifyForms,
+) (model.MultiplayModifyResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.MultiplayModifyResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/modify"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("mpId", parameterToString(varForms.MpId, ""))
+	if varForms != nil && varForms.Tokens != nil {
+		varFormParams.Add("tokens", parameterToString(*varForms.Tokens, "multi"))
+	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// Query
+/*
+ * 离开联机
+ * @param varForms model.MultiplayQueryForms
+ */
+func (s *MultiplayApiService) Query(
+    varForms *model.MultiplayQueryForms,
+) (model.MultiplayQueryResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.MultiplayQueryResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/multiplay/query"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("mpId", parameterToString(varForms.MpId, ""))
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {
