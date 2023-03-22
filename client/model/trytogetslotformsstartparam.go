@@ -9,8 +9,6 @@ package model
 type TryToGetSlotFormsStartParam struct {
         // 启动待缩放分辨率
     Resolution *string `json:"resolution,omitempty"`
-        // 画质
-    PictureQuality *string `json:"pictureQuality,omitempty"`
         // 控制游戏运行时长
     KeepAlive *int64 `json:"keepAlive,omitempty"`
         // 游戏中设备掉线后会话保活时长
@@ -33,4 +31,14 @@ type TryToGetSlotFormsStartParam struct {
     ScriptId *int32 `json:"scriptId,omitempty"`
         // 码率自适应开关
     BitRateSelfAdaption *int32 `json:"bitRateSelfAdaption,omitempty"`
+        // 游戏调度实例等级
+    ScheduleUserLevels *string `json:"scheduleUserLevels,omitempty"`
+        // 设备号Android
+    Ssaid *string `json:"ssaid,omitempty"`
+        // 应用渠道
+    AppChannel *string `json:"appChannel,omitempty"`
+        // 游戏初始化路径
+    CloudInit *string `json:"cloudInit,omitempty"`
+        // 设备id
+    SysDeviceId *string `json:"sysDeviceId,omitempty"`
 }
