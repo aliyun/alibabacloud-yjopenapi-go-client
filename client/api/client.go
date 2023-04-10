@@ -7,38 +7,37 @@
 package api
 
 import (
-    "bytes"
-    "crypto/md5"
-    "crypto/rand"
-    "encoding/hex"
-    "encoding/json"
-    "errors"
-    "fmt"
-    "net/http"
-    "net/url"
-    "reflect"
-    "regexp"
-    "sort"
-    "strconv"
-    "strings"
-    "time"
-    "unicode/utf8"
-
+	"bytes"
+	"crypto/md5"
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/url"
+	"reflect"
+	"regexp"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
+	"unicode/utf8"
 )
 
 const (
-    Trace_Id string = "Traceid"
-    Result_Status string = "Result-Status"
+	Trace_Id      string = "Traceid"
+	Result_Status string = "Result-Status"
 )
 
 var (
 	jsonCheck = regexp.MustCompile("(?i:[application|text]/json)")
 	xmlCheck  = regexp.MustCompile("(?i:[application|text]/xml)")
 
-    DefaultConfiguration = NewConfiguration()
+	DefaultConfiguration = NewConfiguration()
 )
 
-// APIClient manages communication with the  API v1.0.20221125
+// APIClient manages communication with the  API
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration
@@ -142,34 +141,34 @@ func typeCheckParameter(obj interface{}, expected string, name string) error {
 
 // parameterToString convert interface{} parameters to string, using a delimiter if format is provided.
 func parameterToString(obj interface{}, collectionFormat string) string {
-//	var delimiter string
+	//	var delimiter string
 
-//	switch collectionFormat {
-//	case "pipes":
-//		delimiter = "|"
-//	case "ssv":
-//		delimiter = " "
-//	case "tsv":
-//		delimiter = "\t"
-//	case "csv":
-//		delimiter = ","
-//	}
+	//	switch collectionFormat {
+	//	case "pipes":
+	//		delimiter = "|"
+	//	case "ssv":
+	//		delimiter = " "
+	//	case "tsv":
+	//		delimiter = "\t"
+	//	case "csv":
+	//		delimiter = ","
+	//	}
 
 	if reflect.TypeOf(obj).Kind() == reflect.Slice {
-//		return strings.Trim(strings.Replace(fmt.Sprint(obj), " ", delimiter, -1), "[]")
-        if marshal, err := json.Marshal(obj); err != nil {
-            return ""
-        } else {
-            return string(marshal)
-        }
+		//		return strings.Trim(strings.Replace(fmt.Sprint(obj), " ", delimiter, -1), "[]")
+		if marshal, err := json.Marshal(obj); err != nil {
+			return ""
+		} else {
+			return string(marshal)
+		}
 	}
-    if reflect.TypeOf(obj).Kind() == reflect.Struct {
-        if marshal, err := json.Marshal(obj); err != nil {
-            return ""
-        } else {
-            return string(marshal)
-        }
-    }
+	if reflect.TypeOf(obj).Kind() == reflect.Struct {
+		if marshal, err := json.Marshal(obj); err != nil {
+			return ""
+		} else {
+			return string(marshal)
+		}
+	}
 	return fmt.Sprintf("%v", obj)
 }
 
@@ -181,7 +180,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 // prepareRequest build the request
 func (c *APIClient) prepareRequest(
 	path string,
-    method string,
+	method string,
 	headerParams map[string]string,
 	queryParams url.Values,
 	formParams url.Values,
@@ -241,8 +240,8 @@ func (c *APIClient) prepareRequest(
 	// Add the user agent to the request.
 	localVarRequest.Header.Add("User-Agent", "cgw-client/1.0.0/go")
 
-    // prepare sign headers
-    prepareSignHeader(queryParams, formParams, localVarRequest, c.cfg)
+	// prepare sign headers
+	prepareSignHeader(queryParams, formParams, localVarRequest, c.cfg)
 
 	for header, value := range c.cfg.DefaultHeader {
 		localVarRequest.Header.Add(header, value)
@@ -253,11 +252,11 @@ func (c *APIClient) prepareRequest(
 
 func (c *APIClient) decode(v interface{}, b []byte, contentType string) (err error) {
 	if strings.Contains(contentType, "application/json") {
-        if err = json.Unmarshal(b, v); err != nil {
-            return err
-        }
-        return nil
-    }
+		if err = json.Unmarshal(b, v); err != nil {
+			return err
+		}
+		return nil
+	}
 	return errors.New("undefined response type")
 }
 
@@ -320,79 +319,79 @@ func strlen(s string) int {
 }
 
 func prepareSignHeader(queryParams url.Values, formParams url.Values, localVarRequest *http.Request, cfg *Configuration) {
-    accessKey := cfg.AccessKey
-    nonce := randNonce(16)
-    version := cfg.SignatureVersion
-    timestamp := time.Now().UTC().Format(time.RFC3339)
-    method := cfg.SignatureMethod
+	accessKey := cfg.AccessKey
+	nonce := randNonce(16)
+	version := cfg.SignatureVersion
+	timestamp := time.Now().UTC().Format(time.RFC3339)
+	method := cfg.SignatureMethod
 
-    values := url.Values{}
-    values.Add("AccessKey", accessKey)
-    values.Add("SignatureNonce", nonce)
-    values.Add("SignatureVersion", version)
-    values.Add("SignatureMethod", method)
-    values.Add("Timestamp", timestamp)
-    if len(queryParams) > 0 {
-        for s, i := range queryParams {
-            for _, s2 := range i {
-                values.Add(s, s2)
-            }
-        }
-    }
-    if len(formParams) > 0 {
-        for s, i := range formParams {
-            for _, s2 := range i {
-                values.Add(s, s2)
-            }
-        }
-    }
+	values := url.Values{}
+	values.Add("AccessKey", accessKey)
+	values.Add("SignatureNonce", nonce)
+	values.Add("SignatureVersion", version)
+	values.Add("SignatureMethod", method)
+	values.Add("Timestamp", timestamp)
+	if len(queryParams) > 0 {
+		for s, i := range queryParams {
+			for _, s2 := range i {
+				values.Add(s, s2)
+			}
+		}
+	}
+	if len(formParams) > 0 {
+		for s, i := range formParams {
+			for _, s2 := range i {
+				values.Add(s, s2)
+			}
+		}
+	}
 
-    sign := md5Hex([]byte(getSignRaw(values, localVarRequest.Method, cfg.SecretKey)))
-    localVarRequest.Header.Add("Signature", sign)
-    localVarRequest.Header.Add("Accesskey", accessKey)
-    localVarRequest.Header.Add("Signaturenonce", nonce)
-    localVarRequest.Header.Add("Signatureversion", version)
-    localVarRequest.Header.Add("Timestamp", timestamp)
-    localVarRequest.Header.Add("Signaturemethod", method)
+	sign := md5Hex([]byte(getSignRaw(values, localVarRequest.Method, cfg.SecretKey)))
+	localVarRequest.Header.Add("Signature", sign)
+	localVarRequest.Header.Add("Accesskey", accessKey)
+	localVarRequest.Header.Add("Signaturenonce", nonce)
+	localVarRequest.Header.Add("Signatureversion", version)
+	localVarRequest.Header.Add("Timestamp", timestamp)
+	localVarRequest.Header.Add("Signaturemethod", method)
 }
 
 func md5Hex(data []byte) string {
-    md5Sum := md5.Sum(data)
-    return hex.EncodeToString(md5Sum[:])
+	md5Sum := md5.Sum(data)
+	return hex.EncodeToString(md5Sum[:])
 }
 
 func getSignRaw(values url.Values, method string, secret string) string {
-    return secret + "&" + keySignInput(values, method)
+	return secret + "&" + keySignInput(values, method)
 }
 
 func keySignInput(values url.Values, method string) string {
-    keys := make([]string, 0)
-    for s, _ := range values {
-        keys = append(keys, s)
-    }
-    sort.Strings(keys)
+	keys := make([]string, 0)
+	for s, _ := range values {
+		keys = append(keys, s)
+	}
+	sort.Strings(keys)
 
-    stringToSign := method + "&" + encodeURLComponent("/")
+	stringToSign := method + "&" + encodeURLComponent("/")
 
-    strs := make([]string, 0)
-    for _, k := range keys {
-        strs = append(strs, k+"="+encodeURLComponent(values.Get(k)))
-    }
-    return stringToSign + "&" + encodeURLComponent(strings.Join(strs, "&"))
+	strs := make([]string, 0)
+	for _, k := range keys {
+		strs = append(strs, k+"="+encodeURLComponent(values.Get(k)))
+	}
+	return stringToSign + "&" + encodeURLComponent(strings.Join(strs, "&"))
 }
 
 func encodeURLComponent(str string) string {
-    escape := url.QueryEscape(str)
-    escape = strings.ReplaceAll(escape, "+", "%20")
-    escape = strings.ReplaceAll(escape, "*", "%2A")
-    escape = strings.ReplaceAll(escape, "%7E", "~")
-    return escape
+	escape := url.QueryEscape(str)
+	escape = strings.ReplaceAll(escape, "+", "%20")
+	escape = strings.ReplaceAll(escape, "*", "%2A")
+	escape = strings.ReplaceAll(escape, "%7E", "~")
+	return escape
 }
 
 func randNonce(n int) string {
-    b := make([]byte, n)
-    rand.Read(b)
-    return hex.EncodeToString(b)
+	b := make([]byte, n)
+	rand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 // GenericError Provides access to the body, error and model on returned errors.
@@ -418,14 +417,14 @@ func (e GenericError) Model() interface{} {
 }
 
 type Configuration struct {
-    Host             string            `json:"host"`
-    Scheme           string            `json:"scheme"`
-    DefaultHeader    map[string]string `json:"defaultHeader,omitempty"`
-    AccessKey        string            `json:"accessKey"`
-    SecretKey        string            `json:"secretKey"`
-    SignatureVersion string            `json:"signatureVersion"`
-    SignatureMethod  string            `json:"signatureMethod"`
-    HTTPClient       *http.Client
+	Host             string            `json:"host"`
+	Scheme           string            `json:"scheme"`
+	DefaultHeader    map[string]string `json:"defaultHeader,omitempty"`
+	AccessKey        string            `json:"accessKey"`
+	SecretKey        string            `json:"secretKey"`
+	SignatureVersion string            `json:"signatureVersion"`
+	SignatureMethod  string            `json:"signatureMethod"`
+	HTTPClient       *http.Client
 }
 
 func NewConfiguration() *Configuration {
