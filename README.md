@@ -8,7 +8,7 @@
 ## Installation
 If you use `go mod` to manage your dependence, you can use the following command:
 ```
-go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230410
+go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230602
 ```
 
 ## Usage
@@ -57,6 +57,7 @@ _ := result
  | *ConsoleAdminApi* | **ListDeployableInstances** | *ListDeployableInstancesForms*  | *ConsoleAdminListDeployableInstancesResult* | 指定项目和游戏版本，获取可以部署的实例 |
  | *ConsoleAdminApi* | **ListGameVersions** | *ListGameVersionsForms*  | *ConsoleAdminListGameVersionsResult* | 分页获取游戏版本列表 |
  | *ConsoleAdminApi* | **ListGames** | *ListGamesForms*  | *ConsoleAdminListGamesResult* | 分页获取游戏列表 |
+ | *ConsoleAdminApi* | **ListInstancesOfProject** | *ListInstancesOfProjectForms*  | *ConsoleAdminListInstancesOfProjectResult* | 分页获取项目中的实例 |
  | *ConsoleAdminApi* | **ListProjects** | *ListProjectsForms*  | *ConsoleAdminListProjectsResult* | 分页获取项目列表 |
  | *ConsoleAdminApi* | **RemoveGameFromProject** | *RemoveGameFromProjectForms*  | *ConsoleAdminRemoveGameFromProjectResult* | 将游戏移出项目 |
  | *ConsoleAdminApi* | **SubmitDeployment** | *SubmitDeploymentForms*  | *ConsoleAdminSubmitDeploymentResult* | 提交游戏版本的部署请求 |
@@ -88,6 +89,7 @@ _ := result
  | *MultiplayApi* | **Leave** | *LeaveForms*  | *MultiplayLeaveResult* | 离开联机 |
  | *MultiplayApi* | **Modify** | *ModifyForms*  | *MultiplayModifyResult* | 修改联机 |
  | *MultiplayApi* | **Query** | *QueryForms*  | *MultiplayQueryResult* | 离开联机 |
+ | *TokenApi* | **GetPair** |   | *GetPairResult* | 获取临时安全令牌(二元组) |
  | *TokenApi* | **GetTriple** |   | *GetTripleResult* | 获取临时安全令牌 |
  | *UsercontrollerApi* | **DeleteGameArchive** | *DeleteGameArchiveForms*  | *UsercontollerDeleteGameArchiveResult* | 根据存档id删除存档纪录 |
  | *UsercontrollerApi* | **GetGameTrialSurplusDuration** | *GetGameTrialSurplusDurationForms*  | *UsercontollerGetGameTrialSurplusDurationResult* | 查询剩余试玩游戏时长 |
