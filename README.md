@@ -8,7 +8,7 @@
 ## Installation
 If you use `go mod` to manage your dependence, you can use the following command:
 ```
-go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230602
+go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230616
 ```
 
 ## Usage

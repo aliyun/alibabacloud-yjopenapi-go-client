@@ -21,4 +21,5 @@ type TryToGetSlotResultModel struct {
     Message string `json:"message,omitempty"`
         // 调度执行结果
     Success bool `json:"success,omitempty"`
+    SlotData string `json:"slotData,omitempty"`
 }
