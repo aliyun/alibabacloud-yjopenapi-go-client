@@ -41,4 +41,6 @@ type TryToGetSlotFormsStartParam struct {
     CloudInit *string `json:"cloudInit,omitempty"`
         // 设备id
     SysDeviceId *string `json:"sysDeviceId,omitempty"`
+    ArchiveUrl *string `json:"archiveUrl,omitempty"`
+    ArchiveMd5 *string `json:"archiveMd5,omitempty"`
 }
