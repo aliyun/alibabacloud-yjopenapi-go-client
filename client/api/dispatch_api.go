@@ -177,6 +177,85 @@ func (s *DispatchApiService) CancelGameHang(
 	return varReturnValue, varHttpResponse, nil
 }
 
+// GameNotify
+/*
+ * 游戏通知
+ * @param varForms model.GameNotifyForms
+ */
+func (s *DispatchApiService) GameNotify(
+    varForms *model.GameNotifyForms,
+) (model.GameNotifyResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.GameNotifyResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/gameNotify"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("gameSession", parameterToString(varForms.GameSession, ""))
+	varFormParams.Add("appKey", parameterToString(varForms.AppKey, ""))
+	varFormParams.Add("type", parameterToString(varForms.Type_, ""))
+	if varForms != nil && varForms.Value != nil {
+		varFormParams.Add("value", parameterToString(*varForms.Value, ""))
+	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
 // GetGameConcurrency
 /*
  * 调用GetGameConcurrency获取游戏当前并发数
@@ -756,6 +835,9 @@ func (s *DispatchApiService) SetGameHang(
 	varFormParams.Add("gameSession", parameterToString(varForms.GameSession, ""))
 	varFormParams.Add("appKey", parameterToString(varForms.AppKey, ""))
 	varFormParams.Add("duration", parameterToString(varForms.Duration, ""))
+	if varForms != nil && varForms.KickInTheGame != nil {
+		varFormParams.Add("kickInTheGame", parameterToString(*varForms.KickInTheGame, ""))
+	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {
@@ -836,6 +918,81 @@ func (s *DispatchApiService) StopGame(
 	if varForms != nil && varForms.Reason != nil {
 		varFormParams.Add("reason", parameterToString(*varForms.Reason, ""))
 	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// StopPreopenContainer
+/*
+ * 停止预开容器
+ * @param varForms model.StopPreopenContainerForms
+ */
+func (s *DispatchApiService) StopPreopenContainer(
+    varForms *model.StopPreopenContainerForms,
+) (model.StopPreopenContainerResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.StopPreopenContainerResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/stopPreopenContainer"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("appKey", parameterToString(varForms.AppKey, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {

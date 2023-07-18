@@ -6,13 +6,13 @@
  */
 package model
 
-type SetGameHangForms struct {
+type GameNotifyForms struct {
         // 会话ID
     GameSession string `json:"gameSession"`
         // 项目应用AK
     AppKey string `json:"appKey"`
-        // 挂机时长
-    Duration int64 `json:"duration"`
-        // 是否踢出游戏中用户
-    KickInTheGame *bool `json:"kickInTheGame,omitempty"`
+        // 通知类型
+    Type_ string `json:"type"`
+        // 通知值
+    Value *string `json:"value,omitempty"`
 }
