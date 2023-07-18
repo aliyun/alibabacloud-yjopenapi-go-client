@@ -8,7 +8,7 @@
 ## Installation
 If you use `go mod` to manage your dependence, you can use the following command:
 ```
-go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230619
+go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230718
 ```
 
 ## Usage
@@ -55,15 +55,18 @@ _ := result
  | *ConsoleAdminApi* | **ListActivatedInstances** | *ListActivatedInstancesForms*  | *ConsoleAdminListActivatedInstancesResult* | 指定项目和游戏，获取已激活版本的可调度实例及调度配置 |
  | *ConsoleAdminApi* | **ListControllersOfGame** | *ListControllersOfGameForms*  | *ConsoleAdminListControllersOfGameResult* | 获取单个游戏关联的控制器列表 |
  | *ConsoleAdminApi* | **ListDeployableInstances** | *ListDeployableInstancesForms*  | *ConsoleAdminListDeployableInstancesResult* | 指定项目和游戏版本，获取可以部署的实例 |
+ | *ConsoleAdminApi* | **ListGameDeployDetailsOfProject** | *ListGameDeployDetailsOfProjectForms*  | *ConsoleAdminListGameDeployDetailsOfProjectResult* | 获取项目下游戏部署版本信息 |
  | *ConsoleAdminApi* | **ListGameVersions** | *ListGameVersionsForms*  | *ConsoleAdminListGameVersionsResult* | 分页获取游戏版本列表 |
  | *ConsoleAdminApi* | **ListGames** | *ListGamesForms*  | *ConsoleAdminListGamesResult* | 分页获取游戏列表 |
  | *ConsoleAdminApi* | **ListInstancesOfProject** | *ListInstancesOfProjectForms*  | *ConsoleAdminListInstancesOfProjectResult* | 分页获取项目中的实例 |
  | *ConsoleAdminApi* | **ListProjects** | *ListProjectsForms*  | *ConsoleAdminListProjectsResult* | 分页获取项目列表 |
+ | *ConsoleAdminApi* | **ListVersionDeployInstances** | *ListVersionDeployInstancesForms*  | *ConsoleAdminListVersionDeployInstancesResult* | 获取项目下游戏版本的部署实例信息 |
  | *ConsoleAdminApi* | **RemoveGameFromProject** | *RemoveGameFromProjectForms*  | *ConsoleAdminRemoveGameFromProjectResult* | 将游戏移出项目 |
  | *ConsoleAdminApi* | **SubmitDeployment** | *SubmitDeploymentForms*  | *ConsoleAdminSubmitDeploymentResult* | 提交游戏版本的部署请求 |
  | *ConsoleAdminApi* | **UploadGameVersionByDownload** | *UploadGameVersionByDownloadForms*  | *ConsoleAdminUploadGameVersionByDownloadResult* | 一键上传：文件上传接口，用远程下载的方式生成新版本 |
  | *DispatchApi* | **BatchStopGame** | *BatchStopGameForms*  | *BatchStopGameResult* | 游戏下全量踢下线，异步接口 |
  | *DispatchApi* | **CancelGameHang** | *CancelGameHangForms*  | *CancelGameHangResult* | 取消游戏挂机 |
+ | *DispatchApi* | **GameNotify** | *GameNotifyForms*  | *GameNotifyResult* | 游戏通知 |
  | *DispatchApi* | **GetGameConcurrency** | *GetGameConcurrencyForms*  | *GetGameConcurrencyResult* | 调用GetGameConcurrency获取游戏当前并发数 |
  | *DispatchApi* | **GetStock** | *GetStockForms*  | *GetStockResult* | 调用GetStock获取游戏当前库存 |
  | *DispatchApi* | **GetStopGameToken** | *GetStopGameTokenForms*  | *GetStopGameTokenResult* | 全量踢下线获取token |
@@ -73,6 +76,7 @@ _ := result
  | *DispatchApi* | **SetGameAlive** | *SetGameAliveForms*  | *SetGameAliveResult* | 设置游戏可运行时长 |
  | *DispatchApi* | **SetGameHang** | *SetGameHangForms*  | *SetGameHangResult* | 设置游戏挂机 |
  | *DispatchApi* | **StopGame** | *StopGameForms*  | *StopGameResult* | 服务端发起，停止某个用户的某个游戏的某个会话 |
+ | *DispatchApi* | **StopPreopenContainer** | *StopPreopenContainerForms*  | *StopPreopenContainerResult* | 停止预开容器 |
  | *DispatchApi* | **TryToGetSlot** | *TryToGetSlotForms*  | *TryToGetSlotResult* | 为用户调度分配游戏容器，容器一旦分配成功会被锁住，一段时间内不再分配给其他用户，过期释放。 |
  | *InteractiveApi* | **GetParty** | *GetPartyForms*  | *InteractiveGetPartyResult* | 获取派对 |
  | *InteractiveApi* | **GetPartyStatus** | *GetPartyStatusForms*  | *InteractiveGetPartyStatusResult* | 查询派对游戏状态 |

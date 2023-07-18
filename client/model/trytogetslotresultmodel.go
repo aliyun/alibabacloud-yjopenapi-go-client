@@ -21,5 +21,14 @@ type TryToGetSlotResultModel struct {
     Message string `json:"message,omitempty"`
         // 调度执行结果
     Success bool `json:"success,omitempty"`
+        // 调度结果集
     SlotData string `json:"slotData,omitempty"`
+        // 调度资源所在国家
+    Country string `json:"country,omitempty"`
+        // 调度资源所在省份
+    Province string `json:"province,omitempty"`
+        // 调度资源所在城市
+    City string `json:"city,omitempty"`
+        // 调度资源运营商信息
+    Operators []TryToGetSlotResultModelOperators `json:"operators,omitempty"`
 }

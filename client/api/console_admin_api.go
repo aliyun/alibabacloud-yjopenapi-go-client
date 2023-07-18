@@ -1075,6 +1075,85 @@ func (s *ConsoleAdminApiService) ListDeployableInstances(
 	return varReturnValue, varHttpResponse, nil
 }
 
+// ListGameDeployDetailsOfProject
+/*
+ * 获取项目下游戏部署版本信息
+ * @param varForms model.ConsoleAdminListGameDeployDetailsOfProjectForms
+ */
+func (s *ConsoleAdminApiService) ListGameDeployDetailsOfProject(
+    varForms *model.ConsoleAdminListGameDeployDetailsOfProjectForms,
+) (model.ConsoleAdminListGameDeployDetailsOfProjectResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.ConsoleAdminListGameDeployDetailsOfProjectResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/consoleAdmin/listGameDeployDetailsOfProject"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	if varForms != nil && varForms.ProjectId != nil {
+		varFormParams.Add("projectId", parameterToString(*varForms.ProjectId, ""))
+	}
+	if varForms != nil && varForms.GameId != nil {
+		varFormParams.Add("gameId", parameterToString(*varForms.GameId, ""))
+	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
 // ListGameVersions
 /*
  * 分页获取游戏版本列表
@@ -1356,6 +1435,91 @@ func (s *ConsoleAdminApiService) ListProjects(
 	}
 	if varForms != nil && varForms.MaxResults != nil {
 		varFormParams.Add("maxResults", parameterToString(*varForms.MaxResults, ""))
+	}
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
+// ListVersionDeployInstances
+/*
+ * 获取项目下游戏版本的部署实例信息
+ * @param varForms model.ConsoleAdminListVersionDeployInstancesForms
+ */
+func (s *ConsoleAdminApiService) ListVersionDeployInstances(
+    varForms *model.ConsoleAdminListVersionDeployInstancesForms,
+) (model.ConsoleAdminListVersionDeployInstancesResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.ConsoleAdminListVersionDeployInstancesResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/consoleAdmin/listVersionDeployInstances"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	if varForms != nil && varForms.ProjectId != nil {
+		varFormParams.Add("projectId", parameterToString(*varForms.ProjectId, ""))
+	}
+	if varForms != nil && varForms.GameId != nil {
+		varFormParams.Add("gameId", parameterToString(*varForms.GameId, ""))
+	}
+	if varForms != nil && varForms.VersionId != nil {
+		varFormParams.Add("versionId", parameterToString(*varForms.VersionId, ""))
+	}
+	if varForms != nil && varForms.DeployStatus != nil {
+		varFormParams.Add("deployStatus", parameterToString(*varForms.DeployStatus, ""))
 	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
