@@ -11,4 +11,6 @@ type StopPreopenContainerForms struct {
     AppKey string `json:"appKey"`
         // 元境平台游戏ID
     GameId string `json:"gameId"`
+        // 分批数
+    NumberOfBatches *int32 `json:"numberOfBatches,omitempty"`
 }
