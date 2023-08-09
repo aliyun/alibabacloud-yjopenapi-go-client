@@ -169,6 +169,82 @@ func (s *UsercontrollerApiService) GetGameTrialSurplusDuration(
 	return varReturnValue, varHttpResponse, nil
 }
 
+// GetUserGameArchive
+/*
+ * 查询用户正常状态的最新存档纪录，按照存档时间倒序
+ * @param varForms model.UsercontrollerGetUserGameArchiveForms
+ */
+func (s *UsercontrollerApiService) GetUserGameArchive(
+    varForms *model.UsercontrollerGetUserGameArchiveForms,
+) (model.UsercontollerGetUserGameArchiveResult, *http.Response, error) {
+	var (
+		varHttpMethod = strings.ToUpper("Post")
+        varReturnValue model.UsercontollerGetUserGameArchiveResult
+	)
+
+	// create path and map variables
+	varPath := s.client.cfg.Scheme + "://" + s.client.cfg.Host + "/usercontroller/getUserGameArchive"
+
+	varHeaderParams := make(map[string]string)
+	varQueryParams := url.Values{}
+	varFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	varHttpContentTypes := []string{"application/x-www-form-urlencoded"}
+
+	// set Content-Type header
+	varHttpContentType := selectHeaderContentType(varHttpContentTypes)
+	if varHttpContentType != "" {
+		varHeaderParams["Content-Type"] = varHttpContentType
+	}
+
+	// to determine the Accept header
+	varHttpHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	varHttpHeaderAccept := selectHeaderAccept(varHttpHeaderAccepts)
+	if varHttpHeaderAccept != "" {
+		varHeaderParams["Accept"] = varHttpHeaderAccept
+	}
+	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
+	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	varFormParams.Add("projectId", parameterToString(varForms.ProjectId, ""))
+
+	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
+	if err != nil {
+		return varReturnValue, nil, err
+	}
+
+	varHttpResponse, err := s.client.callAPI(r)
+	if err != nil || varHttpResponse == nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+    defer varHttpResponse.Body.Close()
+	varBody, err := ioutil.ReadAll(varHttpResponse.Body)
+	if err != nil {
+		return varReturnValue, varHttpResponse, err
+	}
+
+	if varHttpResponse.StatusCode < 300 {
+		// If we succeed, return the data, otherwise pass on to decode error.
+		err = s.client.decode(&varReturnValue, varBody, varHttpResponse.Header.Get("Content-Type"))
+		if err == nil { 
+			return varReturnValue, varHttpResponse, err
+		}
+	}
+
+	if varHttpResponse.StatusCode >= 300 {
+		newErr := GenericError{
+			body: varBody,
+			error: varHttpResponse.Status,
+		}
+		return varReturnValue, varHttpResponse, newErr
+	}
+
+	return varReturnValue, varHttpResponse, nil
+}
+
 // ListLatestGameArchive
 /*
  * 查询用户正常状态的最新存档纪录，按照存档时间倒序

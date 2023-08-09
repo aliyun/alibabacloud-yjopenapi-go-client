@@ -993,6 +993,9 @@ func (s *DispatchApiService) StopPreopenContainer(
 	}
 	varFormParams.Add("appKey", parameterToString(varForms.AppKey, ""))
 	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
+	if varForms != nil && varForms.NumberOfBatches != nil {
+		varFormParams.Add("numberOfBatches", parameterToString(*varForms.NumberOfBatches, ""))
+	}
 
 	r, err := s.client.prepareRequest(varPath, varHttpMethod, varHeaderParams, varQueryParams, varFormParams)
 	if err != nil {

@@ -8,7 +8,7 @@
 ## Installation
 If you use `go mod` to manage your dependence, you can use the following command:
 ```
-go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230718
+go get github.com/aliyun/alibabacloud-yjopenapi-go-client 1.0.20230809
 ```
 
 ## Usage
@@ -97,6 +97,7 @@ _ := result
  | *TokenApi* | **GetTriple** |   | *GetTripleResult* | 获取临时安全令牌 |
  | *UsercontrollerApi* | **DeleteGameArchive** | *DeleteGameArchiveForms*  | *UsercontollerDeleteGameArchiveResult* | 根据存档id删除存档纪录 |
  | *UsercontrollerApi* | **GetGameTrialSurplusDuration** | *GetGameTrialSurplusDurationForms*  | *UsercontollerGetGameTrialSurplusDurationResult* | 查询剩余试玩游戏时长 |
+ | *UsercontrollerApi* | **GetUserGameArchive** | *GetUserGameArchiveForms*  | *UsercontollerGetUserGameArchiveResult* | 查询用户正常状态的最新存档纪录，按照存档时间倒序 |
  | *UsercontrollerApi* | **ListLatestGameArchive** | *ListLatestGameArchiveForms*  | *UsercontollerListLatestGameArchiveResult* | 查询用户正常状态的最新存档纪录，按照存档时间倒序 |
  | *UsercontrollerApi* | **RestoreGameArchive** | *RestoreGameArchiveForms*  | *UsercontollerRestoreGameArchiveResult* | 将指定的存档ID恢复为最新存档 |
  | *UsercontrollerApi* | **UpdateGameArchiveTagStatus** | *UpdateGameArchiveTagStatusForms*  | *UsercontollerUpdateGameArchiveTagStatusResult* | 更新存档打标状态 |
