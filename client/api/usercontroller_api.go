@@ -206,7 +206,7 @@ func (s *UsercontrollerApiService) GetUserGameArchive(
 	if varHttpHeaderAccept != "" {
 		varHeaderParams["Accept"] = varHttpHeaderAccept
 	}
-	varFormParams.Add("userId", parameterToString(varForms.UserId, ""))
+	varFormParams.Add("accountId", parameterToString(varForms.AccountId, ""))
 	varFormParams.Add("gameId", parameterToString(varForms.GameId, ""))
 	varFormParams.Add("projectId", parameterToString(varForms.ProjectId, ""))
 

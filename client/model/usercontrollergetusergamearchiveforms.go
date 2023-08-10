@@ -8,9 +8,9 @@ package model
 
 type UsercontrollerGetUserGameArchiveForms struct {
         // 用户id
-    UserId string `json:"userId"`
+    AccountId string `json:"accountId"`
         // 游戏Id
-    GameId int64 `json:"gameId"`
+    GameId string `json:"gameId"`
         // 项目ID
-    ProjectId int64 `json:"projectId"`
+    ProjectId string `json:"projectId"`
 }
